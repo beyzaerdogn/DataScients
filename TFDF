@@ -1,0 +1,244 @@
+import tensorflow as tf
+import tensorflow_decision_forests as tfdf
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+​
+# Comment this if the data visualisations doesn't work on your side
+%matplotlib inline
+add Codeadd Markdown
+print("TensorFlow v" + tf.__version__)
+print("TensorFlow Decision Forests v" + tfdf.__version__)
+TensorFlow v2.11.0
+TensorFlow Decision Forests v1.2.0
+add Codeadd Markdown
+Load the dataset
+add Codeadd Markdown
+train_file_path = "../input/house-prices-advanced-regression-techniques/train.csv"
+dataset_df = pd.read_csv(train_file_path)
+print("Full train dataset shape is {}".format(dataset_df.shape))
+Full train dataset shape is (1460, 81)
+add Codeadd Markdown
+The data is composed of 81 columns and 1460 entries. We can see all 81 dimensions of our dataset by printing out the first 3 entries using the following code:
+
+add Codeadd Markdown
+dataset_df.head(3)
+Id	MSSubClass	MSZoning	LotFrontage	LotArea	Street	Alley	LotShape	LandContour	Utilities	...	PoolArea	PoolQC	Fence	MiscFeature	MiscVal	MoSold	YrSold	SaleType	SaleCondition	SalePrice
+0	1	60	RL	65.0	8450	Pave	NaN	Reg	Lvl	AllPub	...	0	NaN	NaN	NaN	0	2	2008	WD	Normal	208500
+1	2	20	RL	80.0	9600	Pave	NaN	Reg	Lvl	AllPub	...	0	NaN	NaN	NaN	0	5	2007	WD	Normal	181500
+2	3	60	RL	68.0	11250	Pave	NaN	IR1	Lvl	AllPub	...	0	NaN	NaN	NaN	0	9	2008	WD	Normal	223500
+3 rows × 81 columns
+
+add Codeadd Markdown
+There are 79 feature columns. Using these features your model has to predict the house sale price indicated by the label column named SalePrice.
+add Codeadd Markdown
+We will drop the Id column as it is not necessary for model training.
+
+add Codeadd Markdown
+dataset_df = dataset_df.drop('Id', axis=1)
+dataset_df.head(3)
+MSSubClass	MSZoning	LotFrontage	LotArea	Street	Alley	LotShape	LandContour	Utilities	LotConfig	...	PoolArea	PoolQC	Fence	MiscFeature	MiscVal	MoSold	YrSold	SaleType	SaleCondition	SalePrice
+0	60	RL	65.0	8450	Pave	NaN	Reg	Lvl	AllPub	Inside	...	0	NaN	NaN	NaN	0	2	2008	WD	Normal	208500
+1	20	RL	80.0	9600	Pave	NaN	Reg	Lvl	AllPub	FR2	...	0	NaN	NaN	NaN	0	5	2007	WD	Normal	181500
+2	60	RL	68.0	11250	Pave	NaN	IR1	Lvl	AllPub	Inside	...	0	NaN	NaN	NaN	0	9	2008	WD	Normal	223500
+3 rows × 80 columns
+
+add Codeadd Markdown
+We can inspect the types of feature columns using the following code:
+
+add Codeadd Markdown
+dataset_df.info()
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 1460 entries, 0 to 1459
+Data columns (total 80 columns):
+ #   Column         Non-Null Count  Dtype  
+---  ------         --------------  -----  
+ 0   MSSubClass     1460 non-null   int64  
+ 1   MSZoning       1460 non-null   object 
+ 2   LotFrontage    1201 non-null   float64
+ 3   LotArea        1460 non-null   int64  
+ 4   Street         1460 non-null   object 
+ 5   Alley          91 non-null     object 
+ 6   LotShape       1460 non-null   object 
+ 7   LandContour    1460 non-null   object 
+ 8   Utilities      1460 non-null   object 
+ 9   LotConfig      1460 non-null   object 
+ 10  LandSlope      1460 non-null   object 
+ 11  Neighborhood   1460 non-null   object 
+ 12  Condition1     1460 non-null   object 
+ 13  Condition2     1460 non-null   object 
+ 14  BldgType       1460 non-null   object 
+ 15  HouseStyle     1460 non-null   object 
+ 16  OverallQual    1460 non-null   int64  
+ 17  OverallCond    1460 non-null   int64  
+ 18  YearBuilt      1460 non-null   int64  
+ 19  YearRemodAdd   1460 non-null   int64  
+ 20  RoofStyle      1460 non-null   object 
+ 21  RoofMatl       1460 non-null   object 
+ 22  Exterior1st    1460 non-null   object 
+ 23  Exterior2nd    1460 non-null   object 
+ 24  MasVnrType     1452 non-null   object 
+ 25  MasVnrArea     1452 non-null   float64
+ 26  ExterQual      1460 non-null   object 
+ 27  ExterCond      1460 non-null   object 
+ 28  Foundation     1460 non-null   object 
+ 29  BsmtQual       1423 non-null   object 
+ 30  BsmtCond       1423 non-null   object 
+ 31  BsmtExposure   1422 non-null   object 
+ 32  BsmtFinType1   1423 non-null   object 
+ 33  BsmtFinSF1     1460 non-null   int64  
+ 34  BsmtFinType2   1422 non-null   object 
+ 35  BsmtFinSF2     1460 non-null   int64  
+ 36  BsmtUnfSF      1460 non-null   int64  
+ 37  TotalBsmtSF    1460 non-null   int64  
+ 38  Heating        1460 non-null   object 
+ 39  HeatingQC      1460 non-null   object 
+ 40  CentralAir     1460 non-null   object 
+ 41  Electrical     1459 non-null   object 
+ 42  1stFlrSF       1460 non-null   int64  
+ 43  2ndFlrSF       1460 non-null   int64  
+ 44  LowQualFinSF   1460 non-null   int64  
+ 45  GrLivArea      1460 non-null   int64  
+ 46  BsmtFullBath   1460 non-null   int64  
+ 47  BsmtHalfBath   1460 non-null   int64  
+ 48  FullBath       1460 non-null   int64  
+ 49  HalfBath       1460 non-null   int64  
+ 50  BedroomAbvGr   1460 non-null   int64  
+ 51  KitchenAbvGr   1460 non-null   int64  
+ 52  KitchenQual    1460 non-null   object 
+ 53  TotRmsAbvGrd   1460 non-null   int64  
+ 54  Functional     1460 non-null   object 
+ 55  Fireplaces     1460 non-null   int64  
+ 56  FireplaceQu    770 non-null    object 
+ 57  GarageType     1379 non-null   object 
+ 58  GarageYrBlt    1379 non-null   float64
+ 59  GarageFinish   1379 non-null   object 
+ 60  GarageCars     1460 non-null   int64  
+ 61  GarageArea     1460 non-null   int64  
+ 62  GarageQual     1379 non-null   object 
+ 63  GarageCond     1379 non-null   object 
+ 64  PavedDrive     1460 non-null   object 
+ 65  WoodDeckSF     1460 non-null   int64  
+ 66  OpenPorchSF    1460 non-null   int64  
+ 67  EnclosedPorch  1460 non-null   int64  
+ 68  3SsnPorch      1460 non-null   int64  
+ 69  ScreenPorch    1460 non-null   int64  
+ 70  PoolArea       1460 non-null   int64  
+ 71  PoolQC         7 non-null      object 
+ 72  Fence          281 non-null    object 
+ 73  MiscFeature    54 non-null     object 
+ 74  MiscVal        1460 non-null   int64  
+ 75  MoSold         1460 non-null   int64  
+ 76  YrSold         1460 non-null   int64  
+ 77  SaleType       1460 non-null   object 
+ 78  SaleCondition  1460 non-null   object 
+ 79  SalePrice      1460 non-null   int64  
+dtypes: float64(3), int64(34), object(43)
+memory usage: 912.6+ KB
+add Codeadd Markdown
+House Price Distribution
+Now let us take a look at how the house prices are distributed.
+
+add Codeadd Markdown
+print(dataset_df['SalePrice'].describe())
+plt.figure(figsize=(9, 8))
+sns.distplot(dataset_df['SalePrice'], color='g', bins=100, hist_kws={'alpha': 0.4});
+print(dataset_df['SalePrice'].describe())
+plt.figure(figsize=(9, 8))
+sns.distplot(dataset_df['SalePrice'], color='g', bins=100, hist_kws={'alpha': 0.4});
+count      1460.000000
+mean     180921.195890
+std       79442.502883
+min       34900.000000
+25%      129975.000000
+50%      163000.000000
+75%      214000.000000
+max      755000.000000
+Name: SalePrice, dtype: float64
+/opt/conda/lib/python3.7/site-packages/ipykernel_launcher.py:3: UserWarning: 
+
+`distplot` is a deprecated function and will be removed in seaborn v0.14.0.
+
+Please adapt your code to use either `displot` (a figure-level function with
+similar flexibility) or `histplot` (an axes-level function for histograms).
+
+For a guide to updating your code to use the new functions, please see
+https://gist.github.com/mwaskom/de44147ed2974457ad6372750bbe5751
+
+  This is separate from the ipykernel package so we can avoid doing imports until
+
+add Codeadd Markdown
+Numerical data distribution
+We will now take a look at how the numerical features are distributed. In order to do this, let us first list all the types of data from our dataset and select only the numerical ones.
+
+add Codeadd Markdown
+list(set(dataset_df.dtypes.tolist()))
+[dtype('int64'), dtype('float64'), dtype('O')]
+add Codeadd Markdown
+df_num = dataset_df.select_dtypes(include = ['float64', 'int64'])
+df_num.head()
+MSSubClass	LotFrontage	LotArea	OverallQual	OverallCond	YearBuilt	YearRemodAdd	MasVnrArea	BsmtFinSF1	BsmtFinSF2	...	WoodDeckSF	OpenPorchSF	EnclosedPorch	3SsnPorch	ScreenPorch	PoolArea	MiscVal	MoSold	YrSold	SalePrice
+0	60	65.0	8450	7	5	2003	2003	196.0	706	0	...	0	61	0	0	0	0	0	2	2008	208500
+1	20	80.0	9600	6	8	1976	1976	0.0	978	0	...	298	0	0	0	0	0	0	5	2007	181500
+2	60	68.0	11250	7	5	2001	2002	162.0	486	0	...	0	42	0	0	0	0	0	9	2008	223500
+3	70	60.0	9550	7	5	1915	1970	0.0	216	0	...	0	35	272	0	0	0	0	2	2006	140000
+4	60	84.0	14260	8	5	2000	2000	350.0	655	0	...	192	84	0	0	0	0	0	12	2008	250000
+5 rows × 37 columns
+
+add Codeadd Markdown
+Now let us plot the distribution for all the numerical features.
+
+add Codeadd Markdown
+df_num.hist(figsize=(16, 20), bins=50, xlabelsize=8, ylabelsize=8);
+
+add Codeadd Markdown
+Prepare the dataset
+This dataset contains a mix of numeric, categorical and missing features. TF-DF supports all these feature types natively, and no preprocessing is required. This is one advantage of tree-based models, making them a great entry point to Tensorflow and ML.
+
+add Codeadd Markdown
+Now let us split the dataset into training and testing datasets:
+
+add Codeadd Markdown
+import numpy as np
+​
+def split_dataset(dataset, test_ratio=0.30):
+  test_indices = np.random.rand(len(dataset)) < test_ratio
+  return dataset[~test_indices], dataset[test_indices]
+​
+train_ds_pd, valid_ds_pd = split_dataset(dataset_df)
+print("{} examples in training, {} examples in testing.".format(
+    len(train_ds_pd), len(valid_ds_pd)))
+1007 examples in training, 453 examples in testing.
+add Codeadd Markdown
+There's one more step required before we can train the model. We need to convert the datatset from Pandas format (pd.DataFrame) into TensorFlow Datasets format (tf.data.Dataset).
+
+TensorFlow Datasets is a high performance data loading library which is helpful when training neural networks with accelerators like GPUs and TPUs.
+
+add Codeadd Markdown
+By default the Random Forest Model is configured to train classification tasks. Since this is a regression problem, we will specify the type of the task (tfdf.keras.Task.REGRESSION) as a parameter here.
+
+add Codeadd Markdown
+label = 'SalePrice'
+train_ds = tfdf.keras.pd_dataframe_to_tf_dataset(train_ds_pd, label=label, task = tfdf.keras.Task.REGRESSION)
+valid_ds = tfdf.keras.pd_dataframe_to_tf_dataset(valid_ds_pd, label=label, task = tfdf.keras.Task.REGRESSION)
+add Codeadd Markdown
+Select a Model
+There are several tree-based models for you to choose from.
+
+RandomForestModel
+GradientBoostedTreesModel
+CartModel
+DistributedGradientBoostedTreesModel
+To start, we'll work with a Random Forest. This is the most well-known of the Decision Forest training algorithms.
+
+A Random Forest is a collection of decision trees, each trained independently on a random subset of the training dataset (sampled with replacement). The algorithm is unique in that it is robust to overfitting, and easy to use.
+
+add Codeadd Markdown
+We can list the all the available models in TensorFlow Decision Forests using the following code:
+
+add Codeadd Markdown
+tfdf.keras.get_all_models()
+[tensorflow_decision_forests.keras.RandomForestModel,
+ tensorflow_decision_forests.keras.GradientBoostedTreesModel,
+ tensorflow_decision_forests.keras.CartModel,
+ tensorflow_decision_forests.keras.DistributedGradientBoostedTreesModel]
