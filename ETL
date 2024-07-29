@@ -1,0 +1,47 @@
+ETL (Extract, Transform, Load) ve veri modelleme, veri yönetimi ve veri analitiği süreçlerinde önemli kavramlardır. İşte her birinin detaylı açıklamaları:
+
+ETL (Extract, Transform, Load)
+ETL, verilerin çeşitli kaynaklardan alınması (extract), temizlenmesi ve dönüştürülmesi (transform) ve hedef sisteme yüklenmesi (load) sürecidir. Bu süreç genellikle veri ambarları, veri gölleri veya analitik sistemler gibi büyük veri platformlarında kullanılır.
+
+Extract (Çıkarma):
+
+Verilerin çeşitli kaynaklardan (veritabanları, dosyalar, web servisleri vb.) alınmasıdır.
+Kaynaklar heterojen olabilir ve farklı formatlarda veri içerebilir.
+Bu aşamada veriler genellikle ham ve işlenmemiş haldedir.
+Transform (Dönüştürme):
+
+Çıkarılan verilerin temizlenmesi, doğrulanması ve belirli bir formatta dönüştürülmesidir.
+Dönüştürme işlemleri arasında veri temizleme, veri birleştirme, veri dönüştürme, toplama ve özetleme gibi işlemler yer alır.
+Bu aşama, verilerin hedef sistemin gereksinimlerine uygun hale getirilmesini sağlar.
+Load (Yükleme):
+
+Dönüştürülmüş verilerin hedef veri deposuna (veri ambarı, veri gölü vb.) yüklenmesidir.
+Veriler genellikle toplu işlemlerle veya gerçek zamanlı olarak yüklenir.
+Bu aşama, verilerin analiz edilmesi veya raporlanması için hazır hale getirilmesini sağlar.
+ETL süreçleri, veri entegrasyonu ve veri kalitesi sağlama açısından kritik öneme sahiptir ve büyük veri platformlarında verilerin düzenli ve tutarlı bir şekilde yönetilmesini sağlar.
+
+Veri Modelleme
+Veri modelleme, verilerin nasıl organize edileceğini, saklanacağını ve ilişkilendirileceğini tanımlayan bir süreçtir. Veri modelleme, veri tabanlarının tasarımı ve oluşturulması için temel bir adımdır.
+
+Kavramsal Veri Modelleme:
+
+Yüksek düzeyde ve iş odaklı bir veri modeli oluşturur.
+İş süreçleri ve veri gereksinimleri arasındaki ilişkileri gösterir.
+Kavramsal model, varlıklar (entities) ve bunlar arasındaki ilişkileri (relationships) tanımlar.
+Mantıksal Veri Modelleme:
+
+Daha detaylı ve teknik bir veri modelidir.
+Kavramsal modelde tanımlanan varlıklar ve ilişkiler detaylandırılır.
+Veri tabanının mantıksal yapısını tanımlar ve varlıklar için gerekli olan nitelikleri (attributes) belirler.
+Genellikle ERD (Entity-Relationship Diagram) kullanılarak gösterilir.
+Fiziksel Veri Modelleme:
+
+Veri tabanının fiziksel yapısını tanımlar.
+Mantıksal modelde tanımlanan varlıklar ve ilişkiler, veri tabanı yönetim sistemi (DBMS) için uygun yapıya dönüştürülür.
+Tablo, sütun, veri türleri, indeksler ve diğer veri tabanı nesneleri bu aşamada belirlenir.
+Veri modelleme, veri tabanlarının verimli, güvenli ve ölçeklenebilir olmasını sağlamak için gereklidir. Ayrıca, veri modelleme süreci, iş gereksinimlerinin teknik gereksinimlere doğru bir şekilde dönüştürülmesini ve veri tabanının iş ihtiyaçlarına uygun olarak yapılandırılmasını sağlar.
+
+Özet
+ETL: Verilerin çeşitli kaynaklardan alınması, dönüştürülmesi ve hedef sistemlere yüklenmesi sürecidir.
+Veri Modelleme: Verilerin nasıl organize edileceğini, saklanacağını ve ilişkilendirileceğini tanımlayan süreçtir.
+Her iki kavram da veri yönetimi ve analiz süreçlerinde kritik öneme sahiptir ve verilerin etkin bir şekilde kullanılmasını sağlar.
