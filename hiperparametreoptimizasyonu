@@ -1,0 +1,104 @@
+XGBoost ve LightGBM modellerini kullanarak ve Optuna ile hiperparametre optimizasyonu yaparak bir model eğitmek
+
+
+
+!pip install xgboost lightgbm optuna
+
+!pip install optuna-integration
+
+
+import pandas as pd
+import lightgbm as lgb
+import optuna
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+
+# Veri setlerini okuyun
+train_df = pd.read_csv('/kaggle/input/playground-series-s4e6/train.csv')
+test_df = pd.read_csv('/kaggle/input/playground-series-s4e6/test.csv')
+sample_submission = pd.read_csv('/kaggle/input/playground-series-s4e6/sample_submission.csv')
+# Özellikleri ve hedef değişkeni ayırın
+X = train_df.drop(['id', 'Target'], axis=1)
+y = train_df['Target']
+
+# Eğitim ve doğrulama setlerini oluşturun
+X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+
+# Optuna için hedef fonksiyon
+def objective(trial):
+    param = {
+        'objective': 'binary',
+        'metric': 'binary_logloss',
+        'boosting_type': trial.suggest_categorical('boosting_type', ['gbdt', 'dart']),
+        'num_leaves': trial.suggest_int('num_leaves', 31, 255),
+        'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.2),
+        'feature_fraction': trial.suggest_float('feature_fraction', 0.4, 1.0),
+        'bagging_fraction': trial.suggest_float('bagging_fraction', 0.4, 1.0),
+        'bagging_freq': trial.suggest_int('bagging_freq', 1, 10),
+        'max_depth': trial.suggest_int('max_depth', 3, 15),
+    }
+    
+    # LightGBM datasetleri oluştur
+    train_data = lgb.Dataset(X_train, label=y_train)
+    valid_data = lgb.Dataset(X_valid, label=y_valid, reference=train_data)
+    
+    # LightGBM modelini oluştur
+    model = lgb.train(
+        param, 
+        train_data, 
+        valid_sets=[valid_data], 
+        early_stopping_rounds=100  # Erken durdurma için parametre
+    )
+    
+    # Modelin doğrulama kaybını döndür
+    return model.best_score['valid_0']['binary_logloss']
+
+
+
+
+
+
+#lightgbm 
+
+
+
+
+import lightgbm as lgb
+from sklearn.preprocessing import LabelEncoder
+import pandas as pd
+
+# LabelEncoder nesnesini oluştur
+label_encoder = LabelEncoder()
+
+# Eğitim ve doğrulama etiketlerini dönüştür (eğer etiketler kategorikse)
+if y_train.dtype == 'object' or y_valid.dtype == 'object':
+    y_train_encoded = label_encoder.fit_transform(y_train)
+    y_valid_encoded = label_encoder.transform(y_valid)
+else:
+    y_train_encoded = y_train
+    y_valid_encoded = y_valid
+
+# LightGBM datasetlerini oluştur
+train_data = lgb.Dataset(X_train, label=y_train_encoded)
+valid_data = lgb.Dataset(X_valid, label=y_valid_encoded, reference=train_data)
+
+# Parametreleri tanımla
+param = {
+    'objective': 'binary',
+    'boosting_type': 'gbdt',
+    'num_leaves': 31,
+    'learning_rate': 0.05,
+    'feature_fraction': 0.9
+}
+
+# LightGBM modelini oluştur
+model = lgb.train(
+    param,
+    train_data,
+    valid_sets=[valid_data],
+    callbacks=[lgb.early_stopping(100)]  # Erken durdurma için callback
+)
+
+# Modelin doğrulama kaybını döndür
+binary_logloss = model.best_score['valid_0']['binary_logloss']
+print("Validation Binary Logloss:", binary_logloss)
