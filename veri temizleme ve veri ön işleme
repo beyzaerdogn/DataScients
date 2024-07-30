@@ -1,0 +1,25 @@
+veri temizleme ve veri ön işleme 
+pandas 
+
+-ilk satırlarına bakılır head
+-veri tiplerini değiştircez sayısal yapcaz,
+-harf ve sembol kaldırılır
+-sütunları gör,boşluk varsa doldur alt tire olabilir
+-shape(satırlara örneklem,sütunlara öznitelik denir)
+-veri tipleri kontrol
+-eksik veriler
+-seaborn ile eksik verileri gör 
+-medyan yapabiliriz eksik verileri veya silinir(önerilmez)
+-info
+-object olanlar int çevrildi
+-uniue
+-round(yüksekse aykırı değer çoktur)harf veya sembol vardır gene kaldırılır
+-metin varsa sutunların medyanı alınır ve onun yerine konur 
+-object olanlara ayrı ayrı bakıp temizleme yapıyor round oldukça düşürmeye çalışıyor
+-Replace
+-tarihleri datetime çevrilir
+
+Veri Görselleştirme
+
+seaborn
+pyplot
