@@ -1,0 +1,13 @@
+GridSearch -RandomizedSearchCV
+
+max_depth: Karar ağacının maksimum derinliğini belirler. Daha yüksek değerler modelin daha karmaşık olmasına neden olabilir, bu da overfitting riskini artırabilir.
+
+max_features: Her bir split (bölünme) için değerlendirilecek maksimum özellik sayısını belirler. "auto" genellikle tüm özelliklerin kullanılmasını ifade eder.
+
+min_samples_leaf: Bir yaprak nodunda bulunması gereken minimum örnek sayısını belirtir. Daha yüksek değerler modelin daha genelleştirilebilir olmasını sağlar.
+
+min_samples_split: Bir nodun daha fazla bölünebilmesi için gereken minimum örnek sayısını belirler. Daha yüksek değerler modelin daha genelleştirilebilir olmasını sağlar.
+
+n_estimators: Kullanılacak ağaç sayısını belirtir. Daha fazla ağaç genellikle daha iyi performans sağlar, ancak eğitim süresini artırır.
+
+total time: Belirtilen hiperparametrelerle modelin eğitilmesi için geçen toplam süreyi gösterir.
